@@ -4,10 +4,6 @@ window.onload = function () {
     var WHITE_COLOR = "#ffffff",
         BLACK_COLOR = "#000",
         CURRENT_NODE_COLOR = "#ff3300",
-        CURRENT_EDGE_COLOR = "#ff3300",
-        DISABLED_COLOR = "#808080",
-        VISIT_VERTEX_COLOR = "#808080",
-        VISIT_EDGE_COLOR = "#808080",
         EXTRA_EDGE_COLOR = "#ffff00",
         FIRST_NODE_COLOR = "#00ff00",
         DEFAULT_NODE_COLOR = "#000",
@@ -24,28 +20,21 @@ window.onload = function () {
     var NODE_RANGE = 10;
 
 
-    var info,
-        addTextToInfo,
-        clearInfo;
+    var info_field,
+        setTextToInfo;
 
     // In algorithm div info field
-    info = document.getElementById("info");
+    info_field = document.getElementById("info_field");
     // Add info to info field
-    addTextToInfo = function (info) {
-        info.innerHTML += "> " + info + "<br>";
+    setTextToInfo = function (info) {
+        info_field.innerHTML = info;
         //info.scrollTop = 9999; // Scroll to last string in field
-    };
-    // Delete all info in field
-    clearInfo = function () {
-        info.innerHTML = "";
     };
 
     // Buttons
     var currentBtn, // Current selected button
-        prevStyle, // Previous style of current button
         btnCreateNode,
         btnWork,
-        btnPause,
         btnStop,
         btnView,
         btnClearCanvas,
@@ -131,7 +120,7 @@ window.onload = function () {
     }, false);
 
     var clearAlgorithmInfo = function () {
-        clearInfo();
+        setTextToInfo("");
         recreateAlgorithmExtraInfo();
         // Clean table
         nodes.forEach(function (node) {
@@ -447,20 +436,19 @@ window.onload = function () {
     };
 
     var startAlgorithm = function () {
-        //addTextToInfo("Find the downiest node");
+        setTextToInfo("Find the downiest node");
         nextStep(findFirstNodeStep);
     };
 
     var findFirstNodeStep = function () {
         firstNode = getNode(0);
         nodes.forEach(function (node) {
-            if(node.y < firstNode.y) firstNode = node;
+            if(node.y > firstNode.y) firstNode = node;
         });
 
         firstNode.setNodeColor(FIRST_NODE_COLOR);
         currentNode = firstNode;
-        //addTextToInfo("The first node is <b>" + firstNode.id + "</b>");
-        //addTextToInfo("Find next node");
+        setTextToInfo("Find next node");
         nextStep(findNextNodeStep);
     };
 
@@ -469,20 +457,19 @@ window.onload = function () {
         currentNode.createEdge(index);
         nextNode = getNode(index);
         nextIndex(index);
-        //addTextToInfo("Take next node" /*for ID node: <b>" + index + "</b>"*/);
-        //addTextToInfo("Check this node with other nodes for rotation");
+        setTextToInfo("Take next node<br>Check this node with other nodes for rotation");
         nextStep(findMinNodeStep);
     };
 
     var findMinNodeStep = function () {
         if(index === currentNode.id){
-            //addTextToInfo("All nodes is checked");
+            setTextToInfo("All nodes is checked");
             nextStep(setNextNodeStep);
             return;
         }
 
         currentNode.createExtraEdge(index);
-        //addTextToInfo("Check rotation with this node");
+        setTextToInfo("Check rotation with this node");
         nextStep(checkRotateStep);
     };
 
@@ -491,21 +478,20 @@ window.onload = function () {
         var rotate = (nextNode.x - currentNode.x)*(node.y - nextNode.y)
             - (nextNode.y - currentNode.y)*(node.x - nextNode.x);
 
-        if(rotate < 0){
+        if(rotate > 0){
             nextNode = node;
             currentNode.createEdge(currentNode.extraEdge.to);
-            /*addTextToInfo("This node more righter than current");
-            addTextToInfo("Change the node");*/
+            setTextToInfo("This node more righter than current<br>Change the node");
         } else {
-            /*addTextToInfo("This node less righter than current");
-            addTextToInfo("Don't change the node");*/
+            setTextToInfo("This node less righter than current");
+            setTextToInfo("Don't change the node");
         }
 
         currentNode.extraEdge = undefined;
         draw();
 
         nextIndex(index);
-        //addTextToInfo("Check this node with other nodes for rotation");
+        setTextToInfo("Check this node with other nodes for rotation");
         nextStep(findMinNodeStep);
     };
     
@@ -513,17 +499,17 @@ window.onload = function () {
         currentNode = nextNode;
         currentNode.setNodeColor(CURRENT_NODE_COLOR);
         if(currentNode.id === firstNode.id){
-            //addTextToInfo("The algorithm returned in first node");
+            setTextToInfo("The algorithm returned in first node");
             nextStep(endAlgorithm);
         }
         else {
             nextStep(findNextNodeStep);
-            //addTextToInfo("Find next node");
+            setTextToInfo("Find next node");
         }
     };
 
     var endAlgorithm = function () {
-        //addTextToInfo("The algorithm is done working");
+        setTextToInfo("The algorithm is done working");
     };
 
     draw();
